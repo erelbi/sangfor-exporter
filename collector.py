@@ -169,28 +169,31 @@ class SangforCollector(Collector):
                "Online AZ count",
                float(az_info.get("online_count", 0)))
 
-        # Platform-wide virtual resources (cpu / memory / storage)
-        for res in ov.get("virtual_resources", []):
-            rtype = res.get("type", "unknown")
+        # Platform-wide physical resources (actual usage)
+        # physical_resources: [{name: cpu/memory/storage, total, used, unit}]
+        for res in ov.get("physical_resources", []):
+            name = res.get("name", "").lower()
             total = float(res.get("total", 0))
             used = float(res.get("used", 0))
 
-            if rtype in ("memory", "storage"):
-                # SCP reports in MB → convert to bytes
-                total *= 1024 * 1024
-                used *= 1024 * 1024
-                suffix = f"{rtype}_bytes"
-            else:
-                suffix = rtype  # e.g. "cpu"
-
-            _gauge(metrics,
-                   f"sangfor_platform_{suffix}_total",
-                   f"Platform total {rtype}",
-                   total)
-            _gauge(metrics,
-                   f"sangfor_platform_{suffix}_used",
-                   f"Platform used {rtype}",
-                   used)
+            if name == "cpu":
+                # unit: mhz
+                _gauge(metrics, "sangfor_platform_cpu_total",
+                       "Platform total CPU capacity (MHz)", total)
+                _gauge(metrics, "sangfor_platform_cpu_used",
+                       "Platform used CPU (MHz)", used)
+            elif name == "memory":
+                # unit: mb → bytes
+                _gauge(metrics, "sangfor_platform_memory_bytes_total",
+                       "Platform total memory (bytes)", total * 1024 * 1024)
+                _gauge(metrics, "sangfor_platform_memory_bytes_used",
+                       "Platform used memory (bytes)", used * 1024 * 1024)
+            elif name == "storage":
+                # unit: mb → bytes
+                _gauge(metrics, "sangfor_platform_storage_bytes_total",
+                       "Platform total storage (bytes)", total * 1024 * 1024)
+                _gauge(metrics, "sangfor_platform_storage_bytes_used",
+                       "Platform used storage (bytes)", used * 1024 * 1024)
 
         return metrics
 
@@ -241,7 +244,8 @@ class SangforCollector(Collector):
             az_name = pool.get("name", "")
             az_type = pool.get("type", "")
             status = pool.get("status", "")
-            is_up = 1.0 if status in ("online", "active", "running") else 0.0
+            # "normal" → SCP'nin online durumu
+            is_up = 1.0 if status in ("online", "active", "running", "normal") else 0.0
             labels = [az_id, az_name]
 
             up_g.add_metric([az_id, az_name, az_type], is_up)
@@ -252,18 +256,22 @@ class SangforCollector(Collector):
             except Exception:
                 detail = pool
 
-            for res in detail.get("virtual_resources", []):
-                rtype = res.get("type", "")
+            # physical_resources: [{name, total, used, unit}]
+            for res in detail.get("physical_resources", []):
+                name = res.get("name", "").lower()
                 total = float(res.get("total", 0))
                 used = float(res.get("used", 0))
 
-                if rtype == "cpu":
+                if name == "cpu":
+                    # unit: mhz
                     cpu_total.add_metric(labels, total)
                     cpu_used.add_metric(labels, used)
-                elif rtype == "memory":
+                elif name == "memory":
+                    # unit: mb → bytes
                     mem_total.add_metric(labels, total * 1024 * 1024)
                     mem_used.add_metric(labels, used * 1024 * 1024)
-                elif rtype == "storage":
+                elif name == "storage":
+                    # unit: mb → bytes
                     stor_total.add_metric(labels, total * 1024 * 1024)
                     stor_used.add_metric(labels, used * 1024 * 1024)
 
@@ -441,8 +449,20 @@ class SangforCollector(Collector):
 
             host_up.add_metric(labels, is_up)
 
-            cpu_count = float(host.get("cpu_count", host.get("cpus", 0)))
-            mem_mb = float(host.get("memory_mb", host.get("memory", 0)))
+            # CPU bilgisi nested dict: host["cpu"]["core_count"]
+            cpu_info = host.get("cpu", {})
+            if isinstance(cpu_info, dict):
+                cpu_count = float(cpu_info.get("core_count", cpu_info.get("cpus", 0)))
+            else:
+                cpu_count = float(cpu_info)
+
+            # Memory bilgisi nested dict: host["memory"]["total_mb"]
+            mem_info = host.get("memory", {})
+            if isinstance(mem_info, dict):
+                mem_mb = float(mem_info.get("total_mb", mem_info.get("memory_mb", 0)))
+            else:
+                mem_mb = float(mem_info)
+
             host_cpu.add_metric(labels, cpu_count)
             host_mem.add_metric(labels, mem_mb * 1024 * 1024)
 

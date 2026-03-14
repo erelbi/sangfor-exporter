@@ -339,7 +339,7 @@
     {
       "id": 11,
       "type": "gauge",
-      "title": "CPU Utilization",
+      "title": "CPU Utilization (Physical MHz)",
       "gridPos": {"x": 0, "y": 6, "w": 8, "h": 8},
       "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
@@ -473,7 +473,7 @@
     {
       "id": 15,
       "type": "bargauge",
-      "title": "CPU Usage % per Resource Pool",
+      "title": "CPU Usage % per Resource Pool (Physical MHz)",
       "gridPos": {"x": 0, "y": 15, "w": 8, "h": 8},
       "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
