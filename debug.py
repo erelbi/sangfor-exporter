@@ -48,7 +48,15 @@ try:
 except Exception as e:
     print(f"\n[!] resource_pools.list() HATA: {e}")
 
-# 3. Hosts
+# 3. Volumes
+try:
+    vols = list(client.volumes.list_all())
+    dump("volumes.list_all() — ilk kayıt", vols[0] if vols else "BOŞ LISTE")
+    print(f"  Toplam volume sayısı: {len(vols)}")
+except Exception as e:
+    print(f"\n[!] volumes.list_all() HATA: {e}")
+
+# 4. Hosts
 try:
     hosts = list(client.system.list_all_hosts())
     dump("system.list_all_hosts() — ilk host", hosts[0] if hosts else [])
