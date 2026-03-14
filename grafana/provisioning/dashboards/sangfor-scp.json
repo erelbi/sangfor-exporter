@@ -60,23 +60,6 @@
         "sort": 1,
         "hide": 0,
         "current": {}
-      },
-      {
-        "name": "az_id",
-        "label": "AZ ID (hidden)",
-        "type": "query",
-        "datasource": {"type": "prometheus", "uid": "${datasource}"},
-        "query": {
-          "query": "label_values(sangfor_resource_pool_up{az_name=~\"$az\"}, az_id)",
-          "refId": "StandardVariableQuery"
-        },
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "refresh": 2,
-        "sort": 1,
-        "hide": 2,
-        "current": {}
       }
     ]
   },
@@ -105,7 +88,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "count(sangfor_server_up{az_id=~\"$az_id\"})",
+          "expr": "count(sangfor_server_up{az_name=~\"$az\"})",
           "instant": true,
           "legendFormat": "Total VMs",
           "refId": "A"
@@ -137,7 +120,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "count(sangfor_server_up{az_id=~\"$az_id\", status=\"running\"})",
+          "expr": "count(sangfor_server_up{az_name=~\"$az\", status=\"running\"})",
           "instant": true,
           "legendFormat": "Running",
           "refId": "A"
@@ -169,7 +152,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "count(sangfor_server_up{az_id=~\"$az_id\", status=\"stopped\"})",
+          "expr": "count(sangfor_server_up{az_name=~\"$az\", status=\"stopped\"})",
           "instant": true,
           "legendFormat": "Stopped",
           "refId": "A"
@@ -201,7 +184,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "count(sangfor_host_up{az_id=~\"$az_id\"})",
+          "expr": "count(sangfor_host_up{az_name=~\"$az\"})",
           "instant": true,
           "legendFormat": "Total",
           "refId": "A"
@@ -233,7 +216,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "count(sangfor_host_up{az_id=~\"$az_id\"} == 1)",
+          "expr": "count(sangfor_host_up{az_name=~\"$az\"} == 1)",
           "instant": true,
           "legendFormat": "Online",
           "refId": "A"
@@ -297,7 +280,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "sum(sangfor_tenants_by_az{az_id=~\"$az_id\"})",
+          "expr": "sum(sangfor_tenants_by_az{az_name=~\"$az\"})",
           "instant": true,
           "legendFormat": "Total",
           "refId": "A"
@@ -653,7 +636,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "count by (status) (sangfor_server_up{az_id=~\"$az_id\"})",
+          "expr": "count by (status) (sangfor_server_up{az_name=~\"$az\"})",
           "instant": true,
           "legendFormat": "{{status}}",
           "refId": "A"
@@ -689,9 +672,9 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "count by (az_id) (sangfor_server_up{az_id=~\"$az_id\"})",
+          "expr": "count by (az_name) (sangfor_server_up{az_name=~\"$az\"})",
           "instant": true,
-          "legendFormat": "{{az_id}}",
+          "legendFormat": "{{az_name}}",
           "refId": "A"
         }
       ],
@@ -723,7 +706,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "count by (tenant_id) (sangfor_server_up{az_id=~\"$az_id\"})",
+          "expr": "count by (tenant_id) (sangfor_server_up{az_name=~\"$az\"})",
           "instant": true,
           "legendFormat": "{{tenant_id}}",
           "refId": "A"
@@ -765,7 +748,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "sum(sangfor_storage_tier_total_bytes{az_id=~\"$az_id\"})",
+          "expr": "sum(sangfor_storage_tier_total_bytes{az_name=~\"$az\"})",
           "instant": true,
           "legendFormat": "Total",
           "refId": "A"
@@ -798,7 +781,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "sum(sangfor_storage_tier_allocated_bytes{az_id=~\"$az_id\"})",
+          "expr": "sum(sangfor_storage_tier_allocated_bytes{az_name=~\"$az\"})",
           "instant": true,
           "legendFormat": "Allocated",
           "refId": "A"
@@ -831,7 +814,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "sum(sangfor_storage_tier_allocated_bytes{az_id=~\"$az_id\"}) / sum(sangfor_storage_tier_total_bytes{az_id=~\"$az_id\"}) * 100",
+          "expr": "sum(sangfor_storage_tier_allocated_bytes{az_name=~\"$az\"}) / sum(sangfor_storage_tier_total_bytes{az_name=~\"$az\"}) * 100",
           "instant": true,
           "legendFormat": "Usage %",
           "refId": "A"
@@ -871,7 +854,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "sum by (tier) (sangfor_storage_tier_total_bytes{az_id=~\"$az_id\"})",
+          "expr": "sum by (tier) (sangfor_storage_tier_total_bytes{az_name=~\"$az\"})",
           "instant": true,
           "legendFormat": "{{tier}}",
           "refId": "A"
@@ -902,7 +885,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "sum by (tier, az_name) (sangfor_storage_tier_allocated_bytes{az_id=~\"$az_id\"}) / sum by (tier, az_name) (sangfor_storage_tier_total_bytes{az_id=~\"$az_id\"}) * 100",
+          "expr": "sum by (tier, az_name) (sangfor_storage_tier_allocated_bytes{az_name=~\"$az\"}) / sum by (tier, az_name) (sangfor_storage_tier_total_bytes{az_name=~\"$az\"}) * 100",
           "instant": true,
           "legendFormat": "{{az_name}} — {{tier}}",
           "refId": "A"
@@ -1174,7 +1157,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "count by (status) (sangfor_server_up{az_id=~\"$az_id\"})",
+          "expr": "count by (status) (sangfor_server_up{az_name=~\"$az\"})",
           "instant": false,
           "legendFormat": "{{status}}",
           "refId": "A"

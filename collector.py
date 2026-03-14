@@ -74,6 +74,14 @@ class SangforCollector(Collector):
         metrics: List[Any] = []
         success = 1
 
+        # az_id → az_name eşlemesi — tüm collector'lara aktarılır
+        az_lookup: Dict[str, str] = {}
+        try:
+            for pool in self._client.resource_pools.list():
+                az_lookup[pool.get("id", "")] = pool.get("name", "")
+        except Exception as exc:
+            logger.warning("az_lookup failed: %s", exc)
+
         try:
             metrics.extend(self._collect_overview())
         except Exception as exc:
@@ -86,13 +94,13 @@ class SangforCollector(Collector):
             logger.warning("resource_pools collection failed: %s", exc)
 
         try:
-            metrics.extend(self._collect_servers())
+            metrics.extend(self._collect_servers(az_lookup))
         except Exception as exc:
             logger.warning("servers collection failed: %s", exc)
             success = 0
 
         try:
-            metrics.extend(self._collect_volumes())
+            metrics.extend(self._collect_volumes(az_lookup))
         except Exception as exc:
             logger.warning("volumes collection failed: %s", exc)
 
@@ -107,7 +115,7 @@ class SangforCollector(Collector):
             logger.warning("tenants collection failed: %s", exc)
 
         try:
-            metrics.extend(self._collect_hosts())
+            metrics.extend(self._collect_hosts(az_lookup))
         except Exception as exc:
             logger.warning("hosts collection failed: %s", exc)
 
@@ -286,28 +294,28 @@ class SangforCollector(Collector):
     # Servers (VMs)                                                       #
     # ------------------------------------------------------------------ #
 
-    def _collect_servers(self) -> List[Any]:
+    def _collect_servers(self, az_lookup: Dict[str, str]) -> List[Any]:
         metrics: List[Any] = []
 
         status_counts: Dict[str, int] = {}
-        az_counts: Dict[str, int] = {}
+        az_counts: Dict[str, str] = {}
         tenant_counts: Dict[str, int] = {}
         total = 0
 
         server_up = GaugeMetricFamily(
             "sangfor_server_up",
             "1 if VM is in running state",
-            labels=["server_id", "name", "az_id", "tenant_id", "status"],
+            labels=["server_id", "name", "az_id", "az_name", "tenant_id", "status"],
         )
         server_cores = GaugeMetricFamily(
             "sangfor_server_cores",
             "VM vCPU count",
-            labels=["server_id", "name", "az_id", "tenant_id"],
+            labels=["server_id", "name", "az_id", "az_name", "tenant_id"],
         )
         server_memory = GaugeMetricFamily(
             "sangfor_server_memory_bytes",
             "VM allocated memory (bytes)",
-            labels=["server_id", "name", "az_id", "tenant_id"],
+            labels=["server_id", "name", "az_id", "az_name", "tenant_id"],
         )
 
         for vm in self._client.servers.list_all():
@@ -315,19 +323,20 @@ class SangforCollector(Collector):
             sid = vm.get("id", "")
             name = vm.get("name", "")
             az_id = vm.get("az_id", "")
+            az_name = az_lookup.get(az_id, az_id)
             tenant_id = vm.get("tenant_id", "")
             status = vm.get("status", "unknown")
             cores = float(vm.get("cores", 0))
             memory_mb = float(vm.get("memory_mb", 0))
 
             status_counts[status] = status_counts.get(status, 0) + 1
-            az_counts[az_id] = az_counts.get(az_id, 0) + 1
+            az_counts[az_name] = az_counts.get(az_name, 0) + 1
             tenant_counts[tenant_id] = tenant_counts.get(tenant_id, 0) + 1
 
             is_running = 1.0 if status == "running" else 0.0
-            server_up.add_metric([sid, name, az_id, tenant_id, status], is_running)
-            server_cores.add_metric([sid, name, az_id, tenant_id], cores)
-            server_memory.add_metric([sid, name, az_id, tenant_id], memory_mb * 1024 * 1024)
+            server_up.add_metric([sid, name, az_id, az_name, tenant_id, status], is_running)
+            server_cores.add_metric([sid, name, az_id, az_name, tenant_id], cores)
+            server_memory.add_metric([sid, name, az_id, az_name, tenant_id], memory_mb * 1024 * 1024)
 
         _gauge(metrics, "sangfor_servers_total", "Total VM count", float(total))
 
@@ -343,10 +352,10 @@ class SangforCollector(Collector):
         by_az = GaugeMetricFamily(
             "sangfor_servers_by_az",
             "VM count grouped by resource pool",
-            labels=["az_id"],
+            labels=["az_name"],
         )
-        for az_id, count in az_counts.items():
-            by_az.add_metric([az_id], float(count))
+        for az_name, count in az_counts.items():
+            by_az.add_metric([az_name], float(count))
         metrics.append(by_az)
 
         by_tenant = GaugeMetricFamily(
@@ -365,7 +374,7 @@ class SangforCollector(Collector):
     # Volumes                                                             #
     # ------------------------------------------------------------------ #
 
-    def _collect_volumes(self) -> List[Any]:
+    def _collect_volumes(self, az_lookup: Dict[str, str]) -> List[Any]:
         metrics: List[Any] = []
 
         total = 0
@@ -375,7 +384,7 @@ class SangforCollector(Collector):
         vol_size = GaugeMetricFamily(
             "sangfor_volume_size_bytes",
             "Individual volume size (bytes)",
-            labels=["volume_id", "name", "status", "az_id"],
+            labels=["volume_id", "name", "status", "az_id", "az_name"],
         )
 
         for vol in self._client.volumes.list_all():
@@ -383,12 +392,13 @@ class SangforCollector(Collector):
             vid = vol.get("id", "")
             name = vol.get("name", "")
             az_id = vol.get("az_id", "")
+            az_name = az_lookup.get(az_id, az_id)
             status = vol.get("status", "unknown")
             size_mb = float(vol.get("size_mb", 0))
 
             total_size_mb += size_mb
             status_counts[status] = status_counts.get(status, 0) + 1
-            vol_size.add_metric([vid, name, status, az_id], size_mb * 1024 * 1024)
+            vol_size.add_metric([vid, name, status, az_id, az_name], size_mb * 1024 * 1024)
 
         _gauge(metrics, "sangfor_volumes_total", "Total volume count", float(total))
         _gauge(metrics, "sangfor_volumes_total_size_bytes",
@@ -495,30 +505,31 @@ class SangforCollector(Collector):
     # Physical hosts                                                      #
     # ------------------------------------------------------------------ #
 
-    def _collect_hosts(self) -> List[Any]:
+    def _collect_hosts(self, az_lookup: Dict[str, str]) -> List[Any]:
         host_up = GaugeMetricFamily(
             "sangfor_host_up",
             "1 if physical host is online",
-            labels=["host_id", "name", "az_id"],
+            labels=["host_id", "name", "az_id", "az_name"],
         )
         host_cpu = GaugeMetricFamily(
             "sangfor_host_cpu_total",
             "Physical host CPU core count",
-            labels=["host_id", "name", "az_id"],
+            labels=["host_id", "name", "az_id", "az_name"],
         )
         host_mem = GaugeMetricFamily(
             "sangfor_host_memory_total_bytes",
             "Physical host total memory (bytes)",
-            labels=["host_id", "name", "az_id"],
+            labels=["host_id", "name", "az_id", "az_name"],
         )
 
         for host in self._client.system.list_all_hosts():
             hid = host.get("id", "")
             hname = host.get("name", host.get("hostname", ""))
             az_id = host.get("az_id", "")
+            az_name = az_lookup.get(az_id, az_id)
             status = host.get("status", "")
             is_up = 1.0 if status in ("online", "running", "active") else 0.0
-            labels = [hid, hname, az_id]
+            labels = [hid, hname, az_id, az_name]
 
             host_up.add_metric(labels, is_up)
 
