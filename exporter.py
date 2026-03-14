@@ -18,6 +18,8 @@ import time
 
 from prometheus_client import REGISTRY, start_http_server
 from prometheus_client import PROCESS_COLLECTOR, PLATFORM_COLLECTOR, GC_COLLECTOR
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from sangfor_scp import SCPClient
 from collector import SangforCollector
@@ -61,6 +63,18 @@ def main() -> None:
         secret_key=secret_key,
         verify_ssl=verify_ssl,
     )
+
+    # Retry adapter: sunucu keep-alive bağlantısını kapatırsa otomatik yeniden dener
+    retry = Retry(
+        total=3,
+        connect=3,
+        read=2,
+        backoff_factor=0.5,
+        status_forcelist=[502, 503, 504],
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    client._session.mount("https://", adapter)
+    client._session.mount("http://", adapter)
 
     # ---- Prometheus ---------------------------------------------------
     # Prometheus'un default process/platform metric'lerini kaldır
