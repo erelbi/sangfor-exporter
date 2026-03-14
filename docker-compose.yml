@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  sangfor-exporter:
+    build: .
+    container_name: sangfor-exporter
+    restart: unless-stopped
+    ports:
+      - "9877:9877"
+    environment:
+      SCP_HOST: "${SCP_HOST}"
+      SCP_ACCESS_KEY: "${SCP_ACCESS_KEY}"
+      SCP_SECRET_KEY: "${SCP_SECRET_KEY}"
+      SCP_VERIFY_SSL: "${SCP_VERIFY_SSL:-false}"
+      EXPORTER_PORT: "9877"
+      SCRAPE_INTERVAL: "${SCRAPE_INTERVAL:-60}"
+      LOG_LEVEL: "${LOG_LEVEL:-INFO}"
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_PASSWORD:-admin}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:

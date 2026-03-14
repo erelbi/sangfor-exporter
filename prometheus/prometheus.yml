@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 60s
+  scrape_timeout: 30s
+  evaluation_interval: 60s
+
+scrape_configs:
+  - job_name: "sangfor-scp"
+    static_configs:
+      - targets: ["sangfor-exporter:9877"]
+    metrics_path: /metrics
