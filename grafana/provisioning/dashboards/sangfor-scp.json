@@ -48,7 +48,7 @@
         "name": "az",
         "label": "Resource Pool",
         "type": "query",
-        "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+        "datasource": {"type": "prometheus", "uid": "${datasource}"},
         "query": {
           "query": "label_values(sangfor_resource_pool_up, az_name)",
           "refId": "StandardVariableQuery"
@@ -65,7 +65,7 @@
         "name": "az_id",
         "label": "AZ ID (hidden)",
         "type": "query",
-        "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+        "datasource": {"type": "prometheus", "uid": "${datasource}"},
         "query": {
           "query": "label_values(sangfor_resource_pool_up{az_name=~\"$az\"}, az_id)",
           "refId": "StandardVariableQuery"
@@ -101,10 +101,10 @@
       "type": "stat",
       "title": "Total VMs",
       "gridPos": {"x": 0, "y": 1, "w": 3, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "count(sangfor_server_up{az_id=~\"$az_id\"})",
           "instant": true,
           "legendFormat": "Total VMs",
@@ -133,10 +133,10 @@
       "type": "stat",
       "title": "Running VMs",
       "gridPos": {"x": 3, "y": 1, "w": 3, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "count(sangfor_server_up{az_id=~\"$az_id\", status=\"running\"})",
           "instant": true,
           "legendFormat": "Running",
@@ -165,10 +165,10 @@
       "type": "stat",
       "title": "Stopped VMs",
       "gridPos": {"x": 6, "y": 1, "w": 3, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "count(sangfor_server_up{az_id=~\"$az_id\", status=\"stopped\"})",
           "instant": true,
           "legendFormat": "Stopped",
@@ -197,10 +197,10 @@
       "type": "stat",
       "title": "Physical Hosts",
       "gridPos": {"x": 9, "y": 1, "w": 3, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "count(sangfor_host_up{az_id=~\"$az_id\"})",
           "instant": true,
           "legendFormat": "Total",
@@ -229,10 +229,10 @@
       "type": "stat",
       "title": "Hosts Online",
       "gridPos": {"x": 12, "y": 1, "w": 3, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "count(sangfor_host_up{az_id=~\"$az_id\"} == 1)",
           "instant": true,
           "legendFormat": "Online",
@@ -261,10 +261,10 @@
       "type": "stat",
       "title": "Resource Pools (AZs)",
       "gridPos": {"x": 15, "y": 1, "w": 3, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_az_total",
           "instant": true,
           "legendFormat": "AZs",
@@ -293,10 +293,10 @@
       "type": "stat",
       "title": "Tenants",
       "gridPos": {"x": 18, "y": 1, "w": 3, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_tenants_total",
           "instant": true,
           "legendFormat": "Total",
@@ -325,10 +325,10 @@
       "type": "stat",
       "title": "API Status",
       "gridPos": {"x": 21, "y": 1, "w": 3, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_up",
           "instant": true,
           "legendFormat": "API",
@@ -375,10 +375,10 @@
       "type": "gauge",
       "title": "CPU Utilization (Physical MHz)",
       "gridPos": {"x": 0, "y": 6, "w": 8, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sum(sangfor_resource_pool_cpu_used{az_name=~\"$az\"}) / sum(sangfor_resource_pool_cpu_total{az_name=~\"$az\"}) * 100",
           "instant": true,
           "legendFormat": "CPU %",
@@ -417,10 +417,10 @@
       "type": "gauge",
       "title": "Memory Utilization",
       "gridPos": {"x": 8, "y": 6, "w": 8, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sum(sangfor_resource_pool_memory_used_bytes{az_name=~\"$az\"}) / sum(sangfor_resource_pool_memory_total_bytes{az_name=~\"$az\"}) * 100",
           "instant": true,
           "legendFormat": "Memory %",
@@ -459,10 +459,10 @@
       "type": "gauge",
       "title": "Storage Utilization",
       "gridPos": {"x": 16, "y": 6, "w": 8, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sum(sangfor_resource_pool_storage_used_bytes{az_name=~\"$az\"}) / sum(sangfor_resource_pool_storage_total_bytes{az_name=~\"$az\"}) * 100",
           "instant": true,
           "legendFormat": "Storage %",
@@ -509,10 +509,10 @@
       "type": "bargauge",
       "title": "CPU Usage % per Resource Pool (Physical MHz)",
       "gridPos": {"x": 0, "y": 15, "w": 8, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_resource_pool_cpu_used{az_name=~\"$az\"} / sangfor_resource_pool_cpu_total{az_name=~\"$az\"} * 100",
           "instant": true,
           "legendFormat": "{{az_name}}",
@@ -553,10 +553,10 @@
       "type": "bargauge",
       "title": "Memory Usage % per Resource Pool",
       "gridPos": {"x": 8, "y": 15, "w": 8, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_resource_pool_memory_used_bytes{az_name=~\"$az\"} / sangfor_resource_pool_memory_total_bytes{az_name=~\"$az\"} * 100",
           "instant": true,
           "legendFormat": "{{az_name}}",
@@ -597,10 +597,10 @@
       "type": "bargauge",
       "title": "Storage Usage % per Resource Pool",
       "gridPos": {"x": 16, "y": 15, "w": 8, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_resource_pool_storage_used_bytes{az_name=~\"$az\"} / sangfor_resource_pool_storage_total_bytes{az_name=~\"$az\"} * 100",
           "instant": true,
           "legendFormat": "{{az_name}}",
@@ -649,10 +649,10 @@
       "type": "piechart",
       "title": "VMs by Status",
       "gridPos": {"x": 0, "y": 24, "w": 8, "h": 9},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "count by (status) (sangfor_server_up{az_id=~\"$az_id\"})",
           "instant": true,
           "legendFormat": "{{status}}",
@@ -685,10 +685,10 @@
       "type": "bargauge",
       "title": "VMs by Resource Pool",
       "gridPos": {"x": 8, "y": 24, "w": 8, "h": 9},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "count by (az_id) (sangfor_server_up{az_id=~\"$az_id\"})",
           "instant": true,
           "legendFormat": "{{az_id}}",
@@ -719,10 +719,10 @@
       "type": "bargauge",
       "title": "VMs by Tenant",
       "gridPos": {"x": 16, "y": 24, "w": 8, "h": 9},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "count by (tenant_id) (sangfor_server_up{az_id=~\"$az_id\"})",
           "instant": true,
           "legendFormat": "{{tenant_id}}",
@@ -761,10 +761,10 @@
       "type": "stat",
       "title": "Total GlusterFS Capacity",
       "gridPos": {"x": 0, "y": 34, "w": 6, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sum(sangfor_storage_tier_total_bytes{az_id=~\"$az_id\"})",
           "instant": true,
           "legendFormat": "Total",
@@ -794,10 +794,10 @@
       "type": "stat",
       "title": "Total Allocated Storage",
       "gridPos": {"x": 6, "y": 34, "w": 6, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sum(sangfor_storage_tier_allocated_bytes{az_id=~\"$az_id\"})",
           "instant": true,
           "legendFormat": "Allocated",
@@ -827,10 +827,10 @@
       "type": "stat",
       "title": "Storage Allocation %",
       "gridPos": {"x": 12, "y": 34, "w": 6, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sum(sangfor_storage_tier_allocated_bytes{az_id=~\"$az_id\"}) / sum(sangfor_storage_tier_total_bytes{az_id=~\"$az_id\"}) * 100",
           "instant": true,
           "legendFormat": "Usage %",
@@ -867,10 +867,10 @@
       "type": "piechart",
       "title": "Capacity by Storage Tier",
       "gridPos": {"x": 18, "y": 34, "w": 6, "h": 12},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sum by (tier) (sangfor_storage_tier_total_bytes{az_id=~\"$az_id\"})",
           "instant": true,
           "legendFormat": "{{tier}}",
@@ -898,10 +898,10 @@
       "type": "bargauge",
       "title": "Storage Tier Allocation % (per Tier)",
       "gridPos": {"x": 0, "y": 38, "w": 18, "h": 10},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sum by (tier, az_name) (sangfor_storage_tier_allocated_bytes{az_id=~\"$az_id\"}) / sum by (tier, az_name) (sangfor_storage_tier_total_bytes{az_id=~\"$az_id\"}) * 100",
           "instant": true,
           "legendFormat": "{{az_name}} — {{tier}}",
@@ -950,10 +950,10 @@
       "type": "stat",
       "title": "Total EIPs",
       "gridPos": {"x": 0, "y": 43, "w": 8, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_eips_total",
           "instant": true,
           "legendFormat": "Total EIPs",
@@ -983,10 +983,10 @@
       "type": "stat",
       "title": "Bound EIPs",
       "gridPos": {"x": 8, "y": 43, "w": 8, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_eips_bound_total",
           "instant": true,
           "legendFormat": "Bound",
@@ -1016,10 +1016,10 @@
       "type": "stat",
       "title": "Free EIPs",
       "gridPos": {"x": 16, "y": 43, "w": 8, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_eips_unbound_total",
           "instant": true,
           "legendFormat": "Free",
@@ -1057,10 +1057,10 @@
       "type": "stat",
       "title": "Scrape Success",
       "gridPos": {"x": 0, "y": 48, "w": 6, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_scrape_success",
           "instant": true,
           "legendFormat": "Success",
@@ -1095,10 +1095,10 @@
       "type": "stat",
       "title": "Scrape Duration",
       "gridPos": {"x": 6, "y": 48, "w": 6, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_scrape_duration_seconds",
           "instant": true,
           "legendFormat": "Duration",
@@ -1135,10 +1135,10 @@
       "type": "timeseries",
       "title": "Scrape Duration Trend",
       "gridPos": {"x": 12, "y": 48, "w": 12, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "sangfor_scrape_duration_seconds",
           "instant": false,
           "legendFormat": "Duration (s)",
@@ -1170,10 +1170,10 @@
       "type": "timeseries",
       "title": "VM Count over Time",
       "gridPos": {"x": 0, "y": 52, "w": 12, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {"type": "prometheus", "uid": "${datasource}"},
           "expr": "count by (status) (sangfor_server_up{az_id=~\"$az_id\"})",
           "instant": false,
           "legendFormat": "{{status}}",
