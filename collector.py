@@ -97,6 +97,11 @@ class SangforCollector(Collector):
             logger.warning("volumes collection failed: %s", exc)
 
         try:
+            metrics.extend(self._collect_storage_tiers())
+        except Exception as exc:
+            logger.warning("storage_tiers collection failed: %s", exc)
+
+        try:
             metrics.extend(self._collect_tenants())
         except Exception as exc:
             logger.warning("tenants collection failed: %s", exc)
@@ -399,6 +404,57 @@ class SangforCollector(Collector):
         metrics.append(by_status)
         metrics.append(vol_size)
         return metrics
+
+    # ------------------------------------------------------------------ #
+    # Storage Tiers (ClusterFS / virtual_resources)                      #
+    # ------------------------------------------------------------------ #
+
+    def _collect_storage_tiers(self) -> List[Any]:
+        """
+        Sangfor HCI, dağıtık depolama (ClusterFS) kullanır.
+        Bağımsız volume yoktur; storage kapasite bilgisi
+        virtual_resources içindeki storage tier'larından gelir.
+        """
+        tier_total = GaugeMetricFamily(
+            "sangfor_storage_tier_total_bytes",
+            "Total usable capacity of ClusterFS storage tier (bytes)",
+            labels=["tier", "az_id", "az_name"],
+        )
+        tier_allocated = GaugeMetricFamily(
+            "sangfor_storage_tier_allocated_bytes",
+            "Allocated capacity of ClusterFS storage tier (bytes)",
+            labels=["tier", "az_id", "az_name"],
+        )
+
+        try:
+            pools = self._client.resource_pools.list()
+        except Exception as exc:
+            logger.warning("storage_tiers: resource_pools.list() failed: %s", exc)
+            return [tier_total, tier_allocated]
+
+        for pool in pools:
+            az_id = pool.get("id", "")
+            az_name = pool.get("name", "")
+            try:
+                detail = self._client.resource_pools.get(az_id)
+            except Exception:
+                detail = pool
+
+            for res in detail.get("virtual_resources", []):
+                tier_name = res.get("name", "")
+                unit = res.get("unit", "")
+                # Sadece MB cinsinden storage tier'ları al (CPU/Memory hariç)
+                if unit != "MB" or "Storage" not in tier_name:
+                    continue
+                total = float(res.get("total", 0))
+                allocated = float(res.get("allocated", 0))
+                if total <= 0:
+                    continue
+                labels = [tier_name, az_id, az_name]
+                tier_total.add_metric(labels, total * 1024 * 1024)
+                tier_allocated.add_metric(labels, allocated * 1024 * 1024)
+
+        return [tier_total, tier_allocated]
 
     # ------------------------------------------------------------------ #
     # Tenants                                                             #
