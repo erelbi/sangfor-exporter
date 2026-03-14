@@ -472,6 +472,23 @@ class SangforCollector(Collector):
 
         _gauge(metrics, "sangfor_tenants_total", "Total tenant count", float(total))
         _gauge(metrics, "sangfor_tenants_enabled", "Enabled tenant count", float(enabled))
+
+        # Per-AZ tenant sayısı
+        tenants_by_az = GaugeMetricFamily(
+            "sangfor_tenants_by_az",
+            "Tenant count per resource pool",
+            labels=["az_id", "az_name"],
+        )
+        try:
+            for pool in self._client.resource_pools.list():
+                az_id = pool.get("id", "")
+                az_name = pool.get("name", "")
+                count = sum(1 for _ in self._client.tenants.list_by_resource_pool(az_id))
+                tenants_by_az.add_metric([az_id, az_name], float(count))
+        except Exception as exc:
+            logger.warning("tenants_by_az collection failed: %s", exc)
+        metrics.append(tenants_by_az)
+
         return metrics
 
     # ------------------------------------------------------------------ #

@@ -265,7 +265,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "sangfor_az_total",
+          "expr": "count(sangfor_resource_pool_up{az_name=~\"$az\"})",
           "instant": true,
           "legendFormat": "AZs",
           "refId": "A"
@@ -297,7 +297,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "${datasource}"},
-          "expr": "sangfor_tenants_total",
+          "expr": "sum(sangfor_tenants_by_az{az_id=~\"$az_id\"})",
           "instant": true,
           "legendFormat": "Total",
           "refId": "A"
