@@ -14,7 +14,7 @@ Thanks to that project for handling authentication, pagination, and API abstract
 - Virtual machine counts by status, resource pool, and tenant
 - Physical host availability and capacity (CPU cores, memory)
 - Resource pool (AZ) CPU, memory, and storage utilization from physical resources
-- ClusterFS storage tier breakdown — capacity and allocation per tier
+- GlusterFS storage tier breakdown — capacity and allocation per tier
 - Tenant count
 - EIP (Elastic IP) allocation status
 - Grafana dashboard with AZ-level filtering
@@ -106,7 +106,7 @@ python3 exporter.py
 | `sangfor_resource_pool_storage_total_bytes` | az_id, az_name | Total storage |
 | `sangfor_resource_pool_storage_used_bytes` | az_id, az_name | Used storage |
 
-### ClusterFS Storage Tiers
+### GlusterFS Storage Tiers
 
 | Metric | Labels | Description |
 |--------|--------|-------------|
@@ -161,7 +161,7 @@ Dashboard sections:
 - Resource Utilization — CPU, memory, and storage usage gauges
 - Per AZ Utilization — bar gauges broken down by resource pool
 - Virtual Machines — VM distribution by status, AZ, and tenant
-- Storage Tiers (ClusterFS) — per-tier capacity and allocation breakdown
+- Storage Tiers (GlusterFS) — per-tier capacity and allocation breakdown
 - Elastic IPs — EIP binding status
 - Exporter Health — scrape duration and success
 
@@ -169,8 +169,8 @@ Dashboard sections:
 
 ## Notes
 
-- Sangfor HCI uses a distributed filesystem (ClusterFS). There are typically no
-  standalone block volumes. Storage metrics come from the ClusterFS tier data
+- Sangfor HCI uses a distributed filesystem (GlusterFS). There are typically no
+  standalone block volumes. Storage metrics come from the GlusterFS tier data
   exposed by the SCP API under `virtual_resources`.
 - The exporter refreshes metrics in a background thread. The Prometheus scrape
   interval and `SCRAPE_INTERVAL` can be set independently.
@@ -207,7 +207,7 @@ bu projeye teşekkürler.
 - Sanal makine sayıları: durum, resource pool ve tenant bazında
 - Fiziksel host erişilebilirliği ve kapasitesi (CPU, bellek)
 - Resource pool (AZ) CPU, bellek ve depolama kullanımı (fiziksel kaynaklar)
-- ClusterFS storage tier dökümü: tier başına kapasite ve tahsisat
+- GlusterFS storage tier dökümü: tier başına kapasite ve tahsisat
 - Tenant sayısı
 - EIP (Elastic IP) bağlanma durumu
 - AZ bazında filtreleme destekleyen Grafana dashboard
@@ -278,9 +278,9 @@ python3 exporter.py
 
 ## Notlar
 
-- Sangfor HCI dağıtık bir dosya sistemi (ClusterFS) kullanır. Genellikle bağımsız
+- Sangfor HCI dağıtık bir dosya sistemi (GlusterFS) kullanır. Genellikle bağımsız
   blok volume bulunmaz. Depolama metrikleri, SCP API'sinin `virtual_resources`
-  alanında sunduğu ClusterFS tier verilerinden gelir.
+  alanında sunduğu GlusterFS tier verilerinden gelir.
 - Exporter, metrikleri bir arka plan thread'inde yeniler. Prometheus scrape
   aralığı ile `SCRAPE_INTERVAL` bağımsız olarak ayarlanabilir.
 - SCP kurulumlarında self-signed sertifika yaygındır. Sertifika doğrulamayı

@@ -406,23 +406,23 @@ class SangforCollector(Collector):
         return metrics
 
     # ------------------------------------------------------------------ #
-    # Storage Tiers (ClusterFS / virtual_resources)                      #
+    # Storage Tiers (GlusterFS / virtual_resources)                      #
     # ------------------------------------------------------------------ #
 
     def _collect_storage_tiers(self) -> List[Any]:
         """
-        Sangfor HCI, dağıtık depolama (ClusterFS) kullanır.
+        Sangfor HCI, dağıtık depolama (GlusterFS) kullanır.
         Bağımsız volume yoktur; storage kapasite bilgisi
         virtual_resources içindeki storage tier'larından gelir.
         """
         tier_total = GaugeMetricFamily(
             "sangfor_storage_tier_total_bytes",
-            "Total usable capacity of ClusterFS storage tier (bytes)",
+            "Total usable capacity of GlusterFS storage tier (bytes)",
             labels=["tier", "az_id", "az_name"],
         )
         tier_allocated = GaugeMetricFamily(
             "sangfor_storage_tier_allocated_bytes",
-            "Allocated capacity of ClusterFS storage tier (bytes)",
+            "Allocated capacity of GlusterFS storage tier (bytes)",
             labels=["tier", "az_id", "az_name"],
         )
 

@@ -751,7 +751,7 @@
     {
       "id": 22,
       "type": "row",
-      "title": "Storage Tiers (ClusterFS)",
+      "title": "Storage Tiers (GlusterFS)",
       "collapsed": false,
       "gridPos": {"x": 0, "y": 33, "w": 24, "h": 1}
     },
@@ -759,7 +759,7 @@
     {
       "id": 23,
       "type": "stat",
-      "title": "Total ClusterFS Capacity",
+      "title": "Total GlusterFS Capacity",
       "gridPos": {"x": 0, "y": 34, "w": 6, "h": 4},
       "datasource": {"type": "prometheus", "uid": "${datasource}"},
       "targets": [
